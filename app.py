@@ -4,8 +4,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from models import User, Entity
 from functools import wraps
-
 import os
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
@@ -15,29 +15,39 @@ db = SQLAlchemy(app)
 def authenticate(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        auth = request.authorization
         if not session.get('logged_in'):
             return "access denied (＾ｖ＾)", 404, {"Refresh": "3; url=/"}
         return f(*args, **kwargs)
-
     return wrapper
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if session.get('logged_in') and session['owner']:
+        entries = db.session.query(Entity).filter(Entity.user_id==session['owner']).all()
+    else:
+        entries = None
+    return render_template('index.html', entries=entries)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def do_admin_login():
     if request.method == 'POST':
-        if request.form['password'] == 'password' and request.form['username'] == 'admin':
+        POST_USERNAME = str(request.form['username'])
+        POST_PASSWORD = str(request.form['password'])
+
+        query = db.session.query(User).filter(User.username.in_([POST_USERNAME])).first()
+
+        if check_password_hash(query.password, POST_PASSWORD):
             session['logged_in'] = True
+            session['owner'] = query.id
+            return index()
         else:
             flash('wrong password!')
-        return index()
-    else:
-        return render_template('login.html')
+    return render_template('login.html')
+
+
+
 
 
 @app.route('/register/', methods=['GET', 'POST'])
@@ -57,7 +67,7 @@ def logout():
     return index()
 
 
-@app.route("/get", methods=['GET'])
+@app.route("/get/", methods=['GET'])
 @authenticate
 def get():
     pass
@@ -66,7 +76,13 @@ def get():
 @app.route("/set", methods=['POST'])
 @authenticate
 def set():
-    pass
+    key = request.form['key']
+    value = request.form['value']
+    if key and value:
+        db.session.add(Entity(key=key, value=value, user_id=session['owner']))
+    else:
+        flash('Not correct data!')
+    return index()
 
 
 if __name__ == '__main__':
