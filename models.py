@@ -1,11 +1,15 @@
-from sqlalchemy import *
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
+from werkzeug.security import generate_password_hash, \
+     check_password_hash
+
 
 engine = create_engine('sqlite:///main.db', echo=True)
 Base = declarative_base()
+
+
 
 
 ########################################################################
@@ -20,11 +24,17 @@ class User(Base):
     entities = relationship('Entity', backref='user',
                             lazy='dynamic')
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
     # ----------------------------------------------------------------------
     def __init__(self, username, password):
         """"""
         self.username = username
-        self.password = password
+        self.set_password(password)
 
 
 ########################################################################
