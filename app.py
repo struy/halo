@@ -3,12 +3,24 @@ from flask import flash, redirect, render_template, request, session, abort, url
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from models import User, Entity
+from functools import wraps
 
 import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 db = SQLAlchemy(app)
+
+
+def authenticate(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        auth = request.authorization
+        if not session.get('logged_in'):
+            return "access denied (＾ｖ＾)", 404, {"Refresh": "3; url=/"}
+        return f(*args, **kwargs)
+
+    return wrapper
 
 
 @app.route('/')
@@ -45,12 +57,14 @@ def logout():
     return index()
 
 
-@app.route("/get")
+@app.route("/get", methods=['GET'])
+@authenticate
 def get():
     pass
 
 
-@app.route("/set")
+@app.route("/set", methods=['POST'])
+@authenticate
 def set():
     pass
 
