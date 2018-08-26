@@ -18,6 +18,17 @@
 <div class="container">
     <div class="row">
 
+
+        <div class="col-md-12 text-center">
+            <h2 class="">Wellcome</h2>
+        </div>
+
+        <div class="col-md-12">
+            {% for message in get_flashed_messages() %}
+            <div class=flash>{{ message }}</div>
+            {% endfor %}
+        </div>
+
         {% block content %}{% endblock %}
 
     </div>

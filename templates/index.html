@@ -1,32 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="col-md-12 text-center">
-    <h2 class="">Wellcome</h2>
+
+<div class="col-md-12">
+    <!--<a class="btn btn-primary" role="button" href="{{ url_for('index') }}"> Home </a>-->
+
+    {% if not session.logged_in %}
+    <a class="btn btn-warning" role="button" href="{{ url_for('do_admin_login') }}">Log in</a>
+    <a class="btn btn-warning" role="button" href="{{ url_for('register') }}">Sign Up</a>
+    {% else %}
+    <a class="btn btn-warning" role="button" href="{{ url_for('logout') }}">Log out</a>
+
+
+    {% endif %}
+
+    <br><br>
+
 </div>
-        <div class="col-md-12">
-            <!--<a class="btn btn-primary" role="button" href="{{ url_for('index') }}"> Home </a>-->
-
-            {% if not session.logged_in %}
-            <a class="btn btn-warning" role="button" href="{{ url_for('do_admin_login') }}">Log in</a>
-            <a class="btn btn-warning" role="button" href="{{ url_for('register') }}">Sign Up</a>
-            {% else %}
-            <a class="btn btn-warning" role="button" href="{{ url_for('logout') }}">Log out</a>
 
 
-            {% endif %}
+{% if session.logged_in %}
+<div class="col-md-6">
+    <h2>Your keys are :</h2>
+   <ul class=entries>
+  {% for entry in entries %}
+    <li>{{ entry.key }}
+  {% else %}
+    <li><em>Unbelievable.  No entries here so far</em>
+  {% endfor %}
+  </ul>
+</div>
 
-           <br><br>
+<div class="col-md-6">
 
-        </div>
+</div>
 
-        <div class="col-md-6">
+{% else %}
+<h2>Please log in to work !</h2>
+{% endif %}
 
-        </div>
-        <div class="col-md-6">
-
-        </div>
-    </div>
 
 {% endblock %}
 
