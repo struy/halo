@@ -2,29 +2,13 @@
 {% block content %}
 
 
-<div class="col-md-12">
-    <!--<a class="btn btn-primary" role="button" href="{{ url_for('index') }}"> Home </a>-->
-
-    {% if not session.logged_in %}
-    <a class="btn btn-warning" role="button" href="{{ url_for('do_admin_login') }}">Log in</a>
-    <a class="btn btn-warning" role="button" href="{{ url_for('register') }}">Sign Up</a>
-    {% else %}
-    <a class="btn btn-warning" role="button" href="{{ url_for('logout') }}">Log out</a>
-
-
-    {% endif %}
-
-    <br><br>
-
-</div>
-
 
 {% if session.logged_in %}
 <div class="col-md-6">
     <h2>Your keys are :</h2>
    <ul class=entries>
   {% for entry in entries %}
-    <li>{{ entry.key }}
+    <li><a href="/get/{{ entry.key }}"> {{ entry.key }}</a>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}

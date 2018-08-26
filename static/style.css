@@ -1,10 +1,5 @@
 body {
-  background: #9CECFB;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #0052D4, #65C7F7, #9CECFB);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #0052D4, #65C7F7, #9CECFB);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #0052D4;
   color:white;
 }
 
@@ -87,8 +82,23 @@ body {
 /*Entries index.html*/
   ul.entries  li{
       color: white;
-      text-transform: none;
+      list-style-type:none;
+      display: inline-block;
+      padding-left: 5px;
   }
+
+  ul.entries a{
+      color: white;
+  }
+    ul.entries a:hover{
+      color:   #ffc107;
+  }
+
+/*navbar  */
+
+.navbar {
+    margin-bottom: 10px;
+}
 
 
 

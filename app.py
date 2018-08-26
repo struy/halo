@@ -25,9 +25,10 @@ def authenticate(f):
 def index():
     if session.get('logged_in') and session['owner']:
         entries = db.session.query(Entity).filter(Entity.user_id==session['owner']).all()
+
     else:
         entries = None
-    return render_template('index.html', entries=entries)
+    return render_template('index.html', entries=entries, username=session.get('username'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -41,6 +42,7 @@ def do_admin_login():
         if check_password_hash(query.password, POST_PASSWORD):
             session['logged_in'] = True
             session['owner'] = query.id
+            session['username'] = POST_USERNAME
             return index()
         else:
             flash('wrong password!')
@@ -67,10 +69,15 @@ def logout():
     return index()
 
 
-@app.route("/get/", methods=['GET'])
+@app.route("/get/<string:slug>")
 @authenticate
-def get():
-    pass
+def get(slug):
+    query = db.session.query(Entity).filter(
+        Entity.key.in_([slug]),
+        Entity.user_id.in_([session["owner"]])).one_or_none()
+
+    print(query)
+    return render_template('single.html', entity=query)
 
 
 @app.route("/set", methods=['POST'])
@@ -80,6 +87,7 @@ def set():
     value = request.form['value']
     if key and value:
         db.session.add(Entity(key=key, value=value, user_id=session['owner']))
+        db.session.commit()
     else:
         flash('Not correct data!')
     return index()
