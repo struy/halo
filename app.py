@@ -74,11 +74,23 @@ def get(slug):
         Entity.key.in_([slug]),
         Entity.user_id.in_([session["owner"]])).one_or_none()
 
-    # return render_template('single.html', entity=query)
+    return render_template('single.html', entity=query)
+
+
+
+@app.route("/api/get/<string:slug>")
+@authenticate
+def get(slug):
+    query = db.session.query(Entity).filter(
+        Entity.key.in_([slug]),
+        Entity.user_id.in_([session["owner"]])).one_or_none()
+
     return make_response(jsonify(query.serialize), 200)
 
 
-@app.route("/set", methods=['POST'])
+
+
+@app.route("/api/set", methods=['POST'])
 @authenticate
 def set():
     key = request.form['key']
