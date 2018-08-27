@@ -47,6 +47,14 @@ class Entity(Base):
     value = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'key': self.key,
+            'value': self.value
+        }
+
     # ----------------------------------------------------------------------
     def __init__(self, key, value, user_id):
         """"""

@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import flash, redirect, render_template, request, session, abort, url_for
+from flask import flash, redirect, render_template, request, session, abort, url_for, jsonify, make_response
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from models import User, Entity
@@ -18,13 +18,14 @@ def authenticate(f):
         if not session.get('logged_in'):
             return "access denied (＾ｖ＾)", 404, {"Refresh": "3; url=/"}
         return f(*args, **kwargs)
+
     return wrapper
 
 
 @app.route('/')
 def index():
     if session.get('logged_in') and session['owner']:
-        entries = db.session.query(Entity).filter(Entity.user_id==session['owner']).all()
+        entries = db.session.query(Entity).filter(Entity.user_id == session['owner']).all()
 
     else:
         entries = None
@@ -47,9 +48,6 @@ def do_admin_login():
         else:
             flash('wrong password!')
     return render_template('login.html')
-
-
-
 
 
 @app.route('/register/', methods=['GET', 'POST'])
@@ -76,8 +74,8 @@ def get(slug):
         Entity.key.in_([slug]),
         Entity.user_id.in_([session["owner"]])).one_or_none()
 
-    print(query)
-    return render_template('single.html', entity=query)
+    # return render_template('single.html', entity=query)
+    return make_response(jsonify(query.serialize), 200)
 
 
 @app.route("/set", methods=['POST'])
