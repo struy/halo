@@ -2,6 +2,8 @@ var API_URL = 'http://' + location.host + '/getall',
     API_URL_SET = 'http://' + location.host + '/api/set',
     $modal = $('#modal').modal({show: false});
 
+
+
 $(document).ready(function () {
 
     $(function () {
@@ -41,3 +43,7 @@ $(document).ready(function () {
 
 
 });
+
+function goBack() {
+    window.history.back();
+}

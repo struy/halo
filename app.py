@@ -9,9 +9,9 @@ from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 db = SQLAlchemy(app)
-
 
 
 def authenticate(f):
@@ -31,6 +31,7 @@ def index():
 
     else:
         entries = None
+        flash('It worked!')
     return render_template('index.html', entries=entries, username=session.get('username'))
 
 
@@ -52,20 +53,21 @@ def do_admin_login():
             session['logged_in'] = True
             session['owner'] = query.id
             session['username'] = POST_USERNAME
-            return index()
+            return redirect(url_for('index'))
         else:
             flash('wrong password!')
     return render_template('login.html')
 
 
-@app.route('/register/', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     """Register Form"""
     if request.method == 'POST':
         new_user = User(username=request.form['username'], password=request.form['password'])
         db.session.add(new_user)
         db.session.commit()
-        return render_template('login.html')
+        flash('You are now registered in system', 'success')
+        return redirect(url_for('index'))
     return render_template('register.html')
 
 
