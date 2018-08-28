@@ -36,6 +36,7 @@ def index():
 
 
 @app.route('/getall')
+@authenticate
 def get_all_entities():
     entries = db.session.query(Entity).filter(Entity.user_id == session['owner']).all()
     return make_response(jsonify([i.serialize for i in entries]), 200)
