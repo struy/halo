@@ -70,13 +70,18 @@
     <script>
         $(document).ready(function () {
 
-            {% for message in get_flashed_messages() %}
+
+           {% for message in get_flashed_messages() %}
               var flashed_messages ='{{ message }}'
+            var zz ='info'
             toastr.info(flashed_messages)
             {% endfor %}
 
          });
     </script>
+
+
+
 
 
 

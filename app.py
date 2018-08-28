@@ -55,7 +55,7 @@ def do_admin_login():
             session['username'] = POST_USERNAME
             return redirect(url_for('index'))
         else:
-            flash('wrong password!')
+            flash('wrong password!','error')
     return render_template('login.html')
 
 
@@ -108,7 +108,7 @@ def set():
         query = db.session.query(Entity).filter(Entity.key == key, Entity.user_id == session['owner']).first()
         if query is not None:
             if query.value == value:
-                flash('key/value yet exist')
+                flash('key/value yet exist','warning')
                 return json.dumps({'status': 'key/value yet exist'})
             query.value = value
             db.session.commit()
@@ -118,7 +118,7 @@ def set():
             message = ('').join(("Have set ", key, "/", value))
             flash(message)
     else:
-        flash('Not correct data!')
+        flash('Not correct data!','error')
         return json.dumps({'status': 'Not correct data!'})
     return json.dumps({'status': 'OK'})
 
