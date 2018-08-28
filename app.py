@@ -4,7 +4,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from models import User, Entity
 from functools import wraps
-import os
+import os, json
 from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
@@ -32,13 +32,19 @@ def index():
     return render_template('index.html', entries=entries, username=session.get('username'))
 
 
+@app.route('/getall')
+def get_all_entities():
+    entries = db.session.query(Entity).filter(Entity.user_id == session['owner']).all()
+    return make_response(jsonify([i.serialize for i in entries]), 200)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def do_admin_login():
     if request.method == 'POST':
         POST_USERNAME = str(request.form['username'])
         POST_PASSWORD = str(request.form['password'])
 
-        query = db.session.query(User).filter(User.username.in_([POST_USERNAME])).first()
+        query = db.session.query(User).filter(User.username == POST_USERNAME).first()
 
         if check_password_hash(query.password, POST_PASSWORD):
             session['logged_in'] = True
@@ -77,10 +83,9 @@ def get(slug):
     return render_template('single.html', entity=query)
 
 
-
 @app.route("/api/get/<string:slug>")
 @authenticate
-def get(slug):
+def getapi(slug):
     query = db.session.query(Entity).filter(
         Entity.key.in_([slug]),
         Entity.user_id.in_([session["owner"]])).one_or_none()
@@ -88,19 +93,31 @@ def get(slug):
     return make_response(jsonify(query.serialize), 200)
 
 
-
-
 @app.route("/api/set", methods=['POST'])
 @authenticate
 def set():
-    key = request.form['key']
-    value = request.form['value']
+    data = request.get_json()
+    print(data)
+    key = data['key']
+    value = data['value']
+
     if key and value:
-        db.session.add(Entity(key=key, value=value, user_id=session['owner']))
-        db.session.commit()
+        query = db.session.query(Entity).filter(Entity.key == key, Entity.user_id == session['owner']).first()
+        if query is not None:
+            if query.value == value:
+                flash('key/value yet exist')
+                return json.dumps({'status': 'key/value yet exist'})
+            query.value = value
+            db.session.commit()
+        else:
+            db.session.add(Entity(key=key, value=value, user_id=session['owner']))
+            db.session.commit()
+            message = ('').join(("Have set ", key, "/", value))
+            flash(message)
     else:
         flash('Not correct data!')
-    return index()
+        return json.dumps({'status': 'Not correct data!'})
+    return json.dumps({'status': 'OK'})
 
 
 if __name__ == '__main__':
