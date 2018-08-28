@@ -2,22 +2,48 @@
 {% block content %}
 
 
-
 {% if session.logged_in %}
+<div class="col-md-12">
+    <button id="set" type="button" class="btn btn-warning">Set</button>
+    <p>To get value click at link key</p>
+
+</div>
 <div class="col-md-6">
     <h2>Your keys are :</h2>
-   <ul class=entries>
-  {% for entry in entries %}
-    <li><a href="/get/{{ entry.key }}"> {{ entry.key }}</a>
-  {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
-  {% endfor %}
-  </ul>
+    <ul class=entries>
+        {% for entry in entries %}
+        <li><a href="/get/{{ entry.key }}"> {{ entry.key }}</a>
+            {% else %}
+        <li><em>Unbelievable. No entries here so far</em>
+            {% endfor %}
+    </ul>
 </div>
 
-<div class="col-md-6">
 
-</div>
+<div id="modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Set key/value pair</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input id="modal_key" type="text" class="form-control" name="key" placeholder="key">
+                </div>
+                <div class="form-group">
+                    <input id="modal_value" type="text" class="form-control" name="value" placeholder="value">
+                </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary submit">Submit</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 {% else %}
 <h2>Please log in to work !</h2>

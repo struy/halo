@@ -4,6 +4,11 @@ body {
 }
 
 
+
+.modal-title {
+    color: black;
+}
+
  .btn
   {
    outline:0;
