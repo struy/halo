@@ -9,7 +9,9 @@ from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 db = SQLAlchemy(app)
+
 
 
 def authenticate(f):
@@ -83,7 +85,7 @@ def get(slug):
     return render_template('single.html', entity=query)
 
 
-@app.route("/api/get/<string:slug>")
+@app.route("/api/get/<string:slug>", methods=['POST'])
 @authenticate
 def getapi(slug):
     query = db.session.query(Entity).filter(
@@ -97,7 +99,6 @@ def getapi(slug):
 @authenticate
 def set():
     data = request.get_json()
-    print(data)
     key = data['key']
     value = data['value']
 
