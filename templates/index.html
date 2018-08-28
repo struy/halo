@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="content">
+
 
     {% if session.logged_in %}
     <div class="col-md-12">
         <button id="set" type="button" class="btn btn-warning">Set</button>
-
-
+        <br/>
     </div>
     <div class="col-md-6">
-        <h3>Your keys are :</h3>
-          <span>* to get value click on link below</span>
+        <h4 class="h4_entries">Your keys are :</h4>
+          <span class="to_get ">* to get value click on link below</span>
         <ul class=entries>
             {% for entry in entries %}
             <li><a href="/get/{{ entry.key }}"> {{ entry.key }}</a>
@@ -53,7 +52,7 @@
     {% endif %}
 
 
-</div>
+
 
 {% endblock %}
 

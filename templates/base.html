@@ -48,15 +48,13 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-md-12"></div>
-    </div>
-    <div class="row">
               <!--<div class="col-md-12">-->
             <!--{% for message in get_flashed_messages() %}-->
             <!--<div class=flash>{{ message }}</div>-->
             <!--{% endfor %}-->
         <!--</div>-->
-        {% block content %}{% endblock %}
+   <div class="content">
+       {% block content %}{% endblock %} </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
@@ -72,11 +70,11 @@
     <script>
         $(document).ready(function () {
 
-
             {% for message in get_flashed_messages() %}
               var flashed_messages ='{{ message }}'
             toastr.info(flashed_messages)
             {% endfor %}
+
          });
     </script>
 
