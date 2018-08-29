@@ -1,5 +1,4 @@
-var API_URL = 'http://' + location.host + '/getall',
-    API_URL_SET = 'http://' + location.host + '/api/set',
+var API_URL_SET = 'http://' + location.host + '/api/set',
     $modal = $('#modal').modal({show: false});
 
 
@@ -14,7 +13,6 @@ $(document).ready(function () {
 
         $modal.find('.submit').click(function () {
 
-
             $.ajax({
                 url: API_URL_SET,
                 type: 'post',
@@ -23,13 +21,13 @@ $(document).ready(function () {
                 data: JSON.stringify({"key": $('#modal_key').val(), "value": $('#modal_value').val()}),
 
                 success: function () {
+                    // clear from
                     $('#modal_key').val('');
                     $('#value_key').val('');
                     $modal.modal('hide');
 
                     //reload page
                     location.reload();
-
 
                 },
                 error: function () {
@@ -44,6 +42,7 @@ $(document).ready(function () {
 
 });
 
+// function return back
 function goBack() {
     window.history.back();
 }

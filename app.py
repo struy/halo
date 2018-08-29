@@ -1,19 +1,24 @@
 from flask import Flask
-from flask import flash, redirect, render_template, request, session, abort, url_for, jsonify, make_response
-from flask_debugtoolbar import DebugToolbarExtension
+from flask import flash, redirect, render_template, request, session, url_for, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from models import User, Entity
 from functools import wraps
 import os, json
 from werkzeug.security import check_password_hash
+# from flask_debugtoolbar import DebugToolbarExtension
 
+
+# create app
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
+# create db session
 db = SQLAlchemy(app)
 
 
+# decorator auth
 def authenticate(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -24,22 +29,15 @@ def authenticate(f):
     return wrapper
 
 
+# home page
 @app.route('/')
 def index():
     if session.get('logged_in') and session['owner']:
         entries = db.session.query(Entity).filter(Entity.user_id == session['owner']).all()
-
     else:
         entries = None
         flash('It worked!')
     return render_template('index.html', entries=entries, username=session.get('username'))
-
-
-@app.route('/getall')
-@authenticate
-def get_all_entities():
-    entries = db.session.query(Entity).filter(Entity.user_id == session['owner']).all()
-    return make_response(jsonify([i.serialize for i in entries]), 200)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -56,7 +54,7 @@ def do_admin_login():
             session['username'] = POST_USERNAME
             return redirect(url_for('index'))
         else:
-            flash('wrong password!','error')
+            flash('wrong password!', 'error')
     return render_template('login.html')
 
 
@@ -78,7 +76,16 @@ def logout():
     return index()
 
 
-@app.route("/get/<string:slug>")
+# get all entities  of the current user
+@app.route('/getall')
+@authenticate
+def get_all_entities():
+    entries = db.session.query(Entity).filter(Entity.user_id == session['owner']).all()
+    return make_response(jsonify([i.serialize for i in entries]), 200)
+
+
+# get one entry of the current user
+@app.route("/get/<string:slug>", methods=['GET'])
 @authenticate
 def get(slug):
     query = db.session.query(Entity).filter(
@@ -88,6 +95,7 @@ def get(slug):
     return render_template('single.html', entity=query)
 
 
+# JSON response one enity of the current user
 @app.route("/api/get/<string:slug>", methods=['POST'])
 @authenticate
 def getapi(slug):
@@ -98,6 +106,7 @@ def getapi(slug):
     return make_response(jsonify(query.serialize), 200)
 
 
+# set  entity  of the current user
 @app.route("/api/set", methods=['POST'])
 @authenticate
 def set():
@@ -105,27 +114,31 @@ def set():
     key = data['key']
     value = data['value']
 
+    # check empty one of below
     if key and value:
         query = db.session.query(Entity).filter(Entity.key == key, Entity.user_id == session['owner']).first()
         if query is not None:
+            # check the same value exist
             if query.value == value:
-                flash('key/value yet exist','warning')
-                return json.dumps({'status': 'key/value yet exist'})
+                flash('key/value already exist', 'warning')
+                return json.dumps({'status': 'key/value already exist'})
+            # change only value
             query.value = value
             db.session.commit()
         else:
+            # full query
             db.session.add(Entity(key=key, value=value, user_id=session['owner']))
             db.session.commit()
-            message = ('').join(("Have set ", key, "/", value))
+            message = ('').join(("Set ", key, "/", value))
             flash(message)
     else:
-        flash('Not correct data!','error')
+        flash('Not correct data!', 'error')
         return json.dumps({'status': 'Not correct data!'})
     return json.dumps({'status': 'OK'})
 
 
 if __name__ == '__main__':
-    app.debug = True
+    app.debug = False
     app.secret_key = os.urandom(15)
-    toolbar = DebugToolbarExtension(app)
+    # toolbar = DebugToolbarExtension(app)
     app.run(port=2020)

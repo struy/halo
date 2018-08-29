@@ -4,6 +4,7 @@ body {
     color: white;
 }
 
+/*Navbar  */
 .welcome {
     color:yellow;
     padding-left: 5px;
@@ -11,6 +12,12 @@ body {
 }
 
 
+.navbar {
+    margin-bottom: 10px;
+}
+
+
+/*Content */
 .to_get {
     color:#73a8dc;
     padding: 0;
@@ -32,22 +39,14 @@ body {
 }
 }
 
-
-
-
-
-
-
-/*navbar  */
-
-.navbar {
-    margin-bottom: 10px;
-}
-
+/*Modal*/
 
 .modal-title {
     color: black;
 }
+
+/*Form, Btn*/
+
 
 .btn {
     outline: 0;
