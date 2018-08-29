@@ -1,5 +1,4 @@
-__
-# Python Flask microservice.
+# Python Flask microservice
 
 * Backend: Flask,  Sqlalchemy
 * Frontend: Bootstrap 4, JQuery 3
