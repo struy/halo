@@ -30,4 +30,6 @@ docker build -t flask-halo-api  .
 
 docker-compose up -d
 
+RESULT:
+
 ### http://127.0.0.1:2020/
