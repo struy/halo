@@ -1,4 +1,4 @@
-
+__
 # Python Flask microservice.
 
 * Backend: Flask,  Sqlalchemy
@@ -6,9 +6,9 @@
 
 ### demo user and password ("admin", "password")
 
-##########################
+git clone https://github.com/struy/halo.git
 
-USE VENV:
+_USE VENV:_
 
 python3 -m venv env
 
@@ -22,14 +22,12 @@ python3 seeds.py
 
 python3 app.py
 
-##########################
-
-OR USE DOCKER:
+_OR USE DOCKER:_
 
 docker build -t flask-halo-api  .
 
 docker-compose up -d
 
-RESULT:
+_RESULT:_
 
 ### http://127.0.0.1:2020/
