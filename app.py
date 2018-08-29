@@ -141,4 +141,4 @@ if __name__ == '__main__':
     app.debug = False
     app.secret_key = os.urandom(15)
     # toolbar = DebugToolbarExtension(app)
-    app.run(port=2020)
+    app.run(port=2020, host='0.0.0.0')
